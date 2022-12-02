@@ -1,85 +1,54 @@
 const { syncReadFile } = require("../readFiles");
 
 const SCORES = {
-  A: 1,
   X: 1,
-  B: 2,
   Y: 2,
-  C: 3,
   Z: 3,
 };
 const WIN = 6;
 const LOST = 0;
 const DRAW = 3;
 
-//part 1 rules
-const rules = {
-  Z: {
-    s: 3,
-    A: LOST,
-    B: WIN,
-    C: DRAW,
-  },
-  Y: {
-    s: 2,
-    A: WIN,
-    B: DRAW,
-    C: LOST,
-  },
-  X: {
-    s: 1,
-    A: DRAW,
-    B: LOST,
-    C: WIN,
-  },
+const part1Rules = {
+  "A X": DRAW + SCORES["X"],
+  "A Y": WIN + SCORES["Y"],
+  "A Z": LOST + SCORES["Z"],
+
+  "B X": LOST + SCORES["X"],
+  "B Y": DRAW + SCORES["Y"],
+  "B Z": WIN + SCORES["Z"],
+
+  "C X": WIN + SCORES["X"],
+  "C Y": LOST + SCORES["Y"],
+  "C Z": DRAW + SCORES["Z"],
 };
 
-function findTotalScore(data) {
-  let total = 0;
-  for (let i = 0; i < data.length; i++) {
-    const [player1, player2] = data[i].split(" ");
-    if (!player1 || !player2) continue;
-    total = total + rules[player2][player1] + rules[player2].s;
-  }
-  return total;
+function calculateTotal(input, rules) {
+  return input.reduce((acc, curr) => {
+    if (curr) {
+      return acc + rules[curr];
+    }
+    return acc;
+  }, 0);
 }
 
-//part 2
-const strategy = {
-  X: {
-    p: LOST,
-    placement: {
-      A: "Z",
-      B: "X",
-      C: "Y",
-    },
-  },
-  Y: { p: DRAW, placement: { A: "X", B: "Y", C: "Z" } },
-  Z: {
-    p: WIN,
-    placement: {
-      A: "Y",
-      B: "Z",
-      C: "X",
-    },
-  },
+const part2Rules = {
+  "A X": LOST + SCORES["Z"],
+  "B X": LOST + SCORES["X"],
+  "C X": LOST + SCORES["Y"],
+
+  "A Y": DRAW + SCORES["X"],
+  "B Y": DRAW + SCORES["Y"],
+  "C Y": DRAW + SCORES["Z"],
+
+  "A Z": WIN + SCORES["Y"],
+  "B Z": WIN + SCORES["Z"],
+  "C Z": WIN + SCORES["X"],
 };
 
-function findTotalBaseOnStrategy(data) {
-  let total = 0;
-  for (let i = 0; i < data.length; i++) {
-    const [player1, player2] = data[i].split(" ");
-    if (!player1 || !player2) continue;
-    total =
-      total +
-      strategy[player2].p +
-      SCORES[strategy[player2].placement[player1]];
-  }
-  return total;
-}
+const input = syncReadFile("./dayTwoInput.txt");
 
-const data = syncReadFile("./dayTwoInput.txt");
-const totalScore = findTotalScore(data);
-console.log("Part1", totalScore);
-const total = findTotalBaseOnStrategy(data);
-console.log("Part2", total);
+const totalPart1 = calculateTotal(input, part1Rules);
+const totalPart2 = calculateTotal(input, part2Rules);
+console.log("Part1: ", totalPart1);
+console.log("Part2: ", totalPart2);
