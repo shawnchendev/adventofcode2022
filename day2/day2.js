@@ -46,7 +46,7 @@ const part2Rules = {
   "C Z": WIN + SCORES["X"],
 };
 
-const input = syncReadFile("./dayTwoInput.txt");
+const input = syncReadFile("day2/input.txt");
 
 const totalPart1 = calculateTotal(input, part1Rules);
 const totalPart2 = calculateTotal(input, part2Rules);
