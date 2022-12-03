@@ -22,15 +22,7 @@ function matchString([a, b]) {
   const setA = new Set(a);
   const setB = new Set(b);
   const setC = [...setA].filter((x) => setB.has(x));
-  return setC[0];
-}
-
-function matchThreeString([a, b, c]) {
-  const setA = new Set(a);
-  const setB = new Set(b);
-  const setC = new Set(c);
-  const setD = [...setA].filter((x) => setB.has(x) && setC.has(x));
-  return setD[0];
+  return setC;
 }
 
 function groupThreeInput(input) {
@@ -61,12 +53,17 @@ function findTotals(input, mapFunc) {
 
 let total = findTotals(input, (item) => {
   const compartments = splitRucksack(item);
-  return matchString(compartments);
+  return matchString(compartments)[0];
 });
 
-console.log(total);
+console.log("partOneTotal", total);
 
 let partTwoTotal = findTotals(groupThreeInput(input), (item) => {
-  return matchThreeString(item);
+  let tempMath = item[0];
+  for (let i = 0; i < item.length; i++) {
+    const a = matchString([tempMath, item[i]]);
+    tempMath = a;
+  }
+  return tempMath[0];
 });
-console.log(partTwoTotal);
+console.log("partTwoTotal", partTwoTotal);
