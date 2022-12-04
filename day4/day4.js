@@ -71,11 +71,14 @@ function isPairOverlap(pairs) {
 const start = new Date().getTime();
 console.log("start:", start);
 const part1Output = input.map(parseInput).filter((item) => item);
+const readFilesEnd = new Date().getTime();
+console.log("finish end:", readFilesEnd - start, "ms");
+
 const numberOfPairsContained = part1Output
   .map(isPairsFullyContained)
   .filter((isPair) => isPair).length;
 console.log({ numberOfPairsContained });
-console.log("part 1 end:", new Date().getTime() - start, "ms");
+console.log("part 1 end:", new Date().getTime() - readFilesEnd, "ms");
 
 const startPart2 = new Date().getTime();
 console.log("start Part 2:", startPart2);
