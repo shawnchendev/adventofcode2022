@@ -23,6 +23,12 @@ const getStackInput = (input) => {
   };
 };
 
+const findAllNumberIndexes = (str) => {
+  return [...str].reduce((acc, curr, index) => {
+    return curr !== " " ? { ...acc, [curr]: index } : acc;
+  }, []);
+};
+
 /**
  *
  *'        [C] [B] [H]',
@@ -38,15 +44,23 @@ const getStackInput = (input) => {
 parseStacks = (stackInput) => {
   const reverseInput = [...stackInput].reverse();
   let stacks = {};
+  const numberRowIndexes = findAllNumberIndexes(reverseInput[0]);
+
   for (let i = 1; i < reverseInput.length; i++) {
     const line = reverseInput[i];
-    for (let j = 0; j < line.length; j = j + 4) {
-      if (line[j] !== "[") continue;
-      const stackIndex = j / 4 + 1;
-      const crate = line.substring(j + 1, j + 2);
+    Object.keys(numberRowIndexes).forEach((number) => {
+      const stackIndex = Number(number);
+      const crateIndex = numberRowIndexes[number];
+      if (crateIndex > line.length) {
+        return;
+      }
+      const crate = line[crateIndex];
+      if (crate === " ") {
+        return;
+      }
       if (!stacks[stackIndex]) stacks[stackIndex] = [];
       stacks[stackIndex].push(crate);
-    }
+    });
   }
   return stacks;
 };
@@ -76,21 +90,21 @@ const moveCrates = (stacks, moves, fifo = true) => {
   }
   return tempStacks;
 };
-const getTopCrateInMessages = (stacks) => {
+const getTopCrateInString = (stacks) => {
   return Object.values(stacks)
     .map((stack) => {
-      return stack[stack.length - 1];
+      return stack.pop();
     })
     .join("");
 };
-const { stackInput, actions } = getStackInput(input);
+const { stackInput, actions } = getStackInput(sampleInput);
 const stacks = parseStacks(stackInput);
 
 const finalStacks = moveCrates(stacks, actions);
-const topCrates = getTopCrateInMessages(finalStacks);
+const topCrates = getTopCrateInString(finalStacks);
 console.log("part1:", topCrates);
 
 const stacks2 = parseStacks(stackInput);
 const finalStacks2 = moveCrates(stacks2, actions, false);
-const topCrates2 = getTopCrateInMessages(finalStacks2);
+const topCrates2 = getTopCrateInString(finalStacks2);
 console.log("part 2:", topCrates2);
