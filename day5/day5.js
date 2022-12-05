@@ -97,7 +97,7 @@ const getTopCrateInString = (stacks) => {
     })
     .join("");
 };
-const { stackInput, actions } = getStackInput(sampleInput);
+const { stackInput, actions } = getStackInput(input);
 const stacks = parseStacks(stackInput);
 
 const finalStacks = moveCrates(stacks, actions);
