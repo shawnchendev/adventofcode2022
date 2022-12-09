@@ -16,6 +16,7 @@ const findFirstMessageMarker = (input, numOfDist = 4) => {
   return currentIndex;
 };
 
+
 console.log(" === part 1 ===");
 let start = Date.now();
 const firstMarker = findFirstMessageMarker(input);
