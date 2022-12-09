@@ -3,34 +3,6 @@ const { syncReadFile } = require("../readFiles");
 // const sampleInput = syncReadFile("day8/sampleInput.txt");
 const sampleInput = syncReadFile("day8/input.txt");
 console.log(sampleInput);
-let total = [];
-for (let i = 1; i < sampleInput.length - 2; i++) {
-  const input = sampleInput[i];
-  if (!input) continue;
-  for (let j = 1; j < input.length - 1; j++) {
-    const center = sampleInput[i][j];
-    console.log(i, j, "Current", center);
-    const topVisible = searchTop(center, { x: j, y: i }, sampleInput, 0);
-    const bottomVisible = searchBottom(center, { x: j, y: i }, sampleInput, 0);
-    const rightVisible = searchRight(center, { x: j, y: i }, sampleInput, 0);
-    const leftVisible = searchLeft(center, { x: j, y: i }, sampleInput, 0);
-    const scenicScore = topVisible * bottomVisible * rightVisible * leftVisible;
-    console.log(
-      topVisible,
-      "*",
-      leftVisible,
-      "*",
-      rightVisible,
-      "*",
-      bottomVisible
-    );
-
-    console.log("Scenic Score", scenicScore);
-    total.push(scenicScore);
-    console.log("");
-  }
-}
-console.log(total);
 
 function searchTop(currentValue, currentPosition, map, isVisible = 0) {
   const { x, y } = currentPosition;
@@ -76,6 +48,30 @@ function searchRight(currentValue, currentPosition, map, isVisible = 0) {
 
   return (isVisible += 1);
 }
-
-const highestScenicScore = total.sort((a, b) => b - a)[0];
-console.log("highest Scenic Score", highestScenicScore);
+let scenicScores = [];
+for (let i = 1; i < sampleInput.length - 2; i++) {
+  const input = sampleInput[i];
+  if (!input) continue;
+  for (let j = 1; j < input.length - 1; j++) {
+    const center = sampleInput[i][j];
+    const topVisible = searchTop(center, { x: j, y: i }, sampleInput, 0);
+    const bottomVisible = searchBottom(center, { x: j, y: i }, sampleInput, 0);
+    const rightVisible = searchRight(center, { x: j, y: i }, sampleInput, 0);
+    const leftVisible = searchLeft(center, { x: j, y: i }, sampleInput, 0);
+    const scenicScore = topVisible * bottomVisible * rightVisible * leftVisible;
+    console.log(
+      topVisible,
+      "*",
+      leftVisible,
+      "*",
+      rightVisible,
+      "*",
+      bottomVisible
+    );
+    console.log("Scenic Score", scenicScore);
+    scenicScores.push(scenicScore);
+    console.log("");
+  }
+}
+const highestScenicScore = scenicScores.sort((a, b) => b - a)[0];
+console.log("Final Answer for part 2", highestScenicScore);

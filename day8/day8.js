@@ -4,32 +4,6 @@ const { syncReadFile } = require("../readFiles");
 const sampleInput = syncReadFile("day8/input.txt");
 console.log(sampleInput);
 
-const outerGrid = (sampleInput[0].length - 1 + (sampleInput.length - 2)) * 2;
-console.log(outerGrid);
-let total = 0;
-for (let i = 1; i < sampleInput.length - 2; i++) {
-  const input = sampleInput[i];
-  if (!input) continue;
-  for (let j = 1; j < input.length - 1; j++) {
-    const center = sampleInput[i][j];
-    console.log(i, j);
-    const topVisible = searchTop(center, { x: j, y: i }, sampleInput);
-    const bottomVisible = searchBottom(center, { x: j, y: i }, sampleInput);
-    const rightVisible = searchRight(center, { x: j, y: i }, sampleInput);
-    const leftVisible = searchLeft(center, { x: j, y: i }, sampleInput);
-    console.log(
-      topVisible || bottomVisible || rightVisible || leftVisible
-        ? "Visible"
-        : "Not Visible"
-    );
-    if (topVisible || bottomVisible || rightVisible || leftVisible) {
-      total++;
-    }
-    console.log("");
-  }
-}
-console.log(total);
-
 function searchTop(currentValue, currentPosition, map, isVisible = false) {
   const { x, y } = currentPosition;
   const top = map[y - 1]?.[x];
@@ -74,5 +48,27 @@ function searchRight(currentValue, currentPosition, map, isVisible = false) {
   return false;
 }
 
+const outerGrid = (sampleInput[0].length - 1 + (sampleInput.length - 2)) * 2;
+let total = 0;
+for (let i = 1; i < sampleInput.length - 2; i++) {
+  const input = sampleInput[i];
+  if (!input) continue;
+  for (let j = 1; j < input.length - 1; j++) {
+    const center = sampleInput[i][j];
+    const topVisible = searchTop(center, { x: j, y: i }, sampleInput);
+    const bottomVisible = searchBottom(center, { x: j, y: i }, sampleInput);
+    const rightVisible = searchRight(center, { x: j, y: i }, sampleInput);
+    const leftVisible = searchLeft(center, { x: j, y: i }, sampleInput);
+    console.log(
+      topVisible || bottomVisible || rightVisible || leftVisible
+        ? "Visible"
+        : "Not Visible"
+    );
+    if (topVisible || bottomVisible || rightVisible || leftVisible) {
+      total++;
+    }
+    console.log("");
+  }
+}
 const totalVisibleTree = outerGrid + total;
-console.log(totalVisibleTree);
+console.log("Final Answer for part 1", totalVisibleTree);
