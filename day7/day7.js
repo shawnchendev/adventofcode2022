@@ -1,4 +1,5 @@
 const { syncReadFile } = require("../readFiles");
+const { Tree } = require("./tree");
 
 const inputs = syncReadFile("day7/input.txt");
 const sampleInput = syncReadFile("day7/sampleInput.txt");
@@ -29,65 +30,41 @@ const parseCommand = (input) => {
   };
 };
 
-class TreeNode {
-  files = {};
-  name = "";
-  nodes = [];
-  parent = null;
-  directorySize = 0;
-  constructor(name) {
-    this.name = name;
-    this.files = {};
-    this.nodes = [];
-  }
-  addNode(name) {
-    const node = new TreeNode(name);
-    node.parent = this;
-    this.nodes.push(node);
-  }
-
-  addFile(file) {
-    this.files[file.name] = file.size;
-    this.directorySize = sumFiles(this);
-  }
-}
-
-class Tree {
-  constructor(name) {
-    this.root = new TreeNode(name);
-  }
-}
-
-let dirs = null;
-let currentNode = null;
-sampleInput.forEach((input) => {
-  const command = parseCommand(input);
-  if (!command) return;
-  if (command.action === "ls") return;
-  if (command.action === "cd" && command.dir !== "..") {
-    if (!dirs) {
-      dirs = new Tree(command.dir);
-      currentNode = dirs.root;
-    } else {
-      currentNode = currentNode.nodes.find((node) => node.name === command.dir);
+const buildTree = (input) => {
+  let dirs = null;
+  let currentNode = null;
+  input.forEach((input) => {
+    const command = parseCommand(input);
+    if (!command) return;
+    if (command.action === "ls") return;
+    if (command.action === "cd" && command.dir !== "..") {
+      if (!dirs) {
+        dirs = new Tree(command.dir);
+        currentNode = dirs.root;
+      } else {
+        currentNode = currentNode.nodes.find(
+          (node) => node.name === command.dir
+        );
+      }
+      return;
     }
-    return;
-  }
 
-  if (command.action === "cd" && command.dir === "..") {
-    currentNode = currentNode.parent;
-    return;
-  }
-  if (!command.action && command.name) {
-    currentNode.addNode(command.name);
-    return;
-  }
-  if (!command.action && command.fileName) {
-    const file = { name: command.fileName, size: command.size };
-    currentNode.addFile(file);
-    return;
-  }
-});
+    if (command.action === "cd" && command.dir === "..") {
+      currentNode = currentNode.parent;
+      return;
+    }
+    if (!command.action && command.name) {
+      currentNode.addNode(command.name);
+      return;
+    }
+    if (!command.action && command.fileName) {
+      const file = { name: command.fileName, size: command.size };
+      currentNode.addFile(file);
+      return;
+    }
+  });
+  return dirs;
+};
 
 function sumFiles(root) {
   let total = 0;
@@ -97,43 +74,50 @@ function sumFiles(root) {
   for (const file of files) {
     total += root.files[file];
   }
-
   // Recurse into each subdirectory
   for (const node of root.nodes) {
     total += sumFiles(node);
   }
-
   return total;
 }
-let total = [];
-function bfsSum(node) {
-  total.push(node.directorySize);
-  if (!node.nodes) return;
 
-  for (const n of node.nodes) {
-    bfsSum(n, total);
-  }
+function sumAllDirectorySizes(root) {
+  let total = [];
+  const bfsSum = (node) => {
+    total.push(sumFiles(node));
+    if (!node.nodes) return;
+
+    for (const n of node.nodes) {
+      bfsSum(n, total);
+    }
+  };
+  bfsSum(root);
+  return total;
 }
 
-bfsSum(dirs.root);
-console.log(total);
-const finalSum = total.reduce((acc, key) => {
-  if (key <= 100000) {
-    acc += key;
-  }
-  return acc;
-}, 0);
+function sumDirectoriesLess100K(total) {
+  return total.reduce((acc, key) => {
+    if (key <= 100000) {
+      acc += key;
+    }
+    return acc;
+  }, 0);
+}
 
-console.log(finalSum);
+const dirs = buildTree(inputs);
+const directorySizes = sumAllDirectorySizes(dirs.root);
+const finalSum = sumDirectoriesLess100K(directorySizes);
 
-const rootSize = total[0];
+console.log("part 1: ", finalSum);
+
+const rootSize = directorySizes[0];
 const freeSpace = 70000000 - rootSize;
 const spaceNeeded = 30000000 - freeSpace;
 console.log(freeSpace, "free space");
 console.log(spaceNeeded, " space needed");
 
-const smallestDirectory = total
+const smallestDirectory = directorySizes
   .filter((key) => key >= spaceNeeded)
   .sort((a, b) => a - b);
 
-console.log(smallestDirectory[0], "smallest directory");
+console.log("part 2", smallestDirectory[0]);
