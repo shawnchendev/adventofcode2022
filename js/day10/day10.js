@@ -60,7 +60,6 @@ console.log(signalStrengths.reduce((acc, curr) => acc + curr, 0));
 function renderCRTImage(inputs) {
   const numberOfPixels = 3;
   let spritePosition = new Array(numberOfPixels).fill(0).map((_, i) => i);
-  console.log(spritePosition);
   let cycleCounter = 1;
   let executionCounter = 1;
   let x = 1;
