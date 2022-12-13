@@ -3,9 +3,8 @@ const { syncReadFile } = require("../readFiles");
 const sampleInputs = syncReadFile("./js/day12/sampleInput.txt");
 const inputs = syncReadFile("./js/day12/input.txt");
 
-console.log(sampleInputs);
-console.log(inputs);
-
+console.log(inputs.map((row) => [...row].join(" ")).join("\n") + "\n");
+console.log(sampleInputs.map((row) => [...row].join(" ")).join("\n") + "\n");
 function getValue(letter) {
   if (letter === "E") {
     return "z".charCodeAt(0) - 96;
@@ -56,6 +55,7 @@ class Grid {
   constructor(inputs) {
     let grid = parseInput(inputs);
     this.grid = grid;
+
     this.map = this.createEmptyMap(grid);
     this.end = this.getPoint(grid);
     this.start = this.getPoint(grid, "S") || [0, 0];
@@ -248,24 +248,17 @@ class A_Star {
 }
 
 const grid = new Grid(inputs);
-console.log(
-  "========================================================PART 1================================================================"
-);
+console.log("=====PART 1=====");
 let aStar = new A_Star(grid);
 const path = aStar.search();
 console.log("path", path.length);
 grid.buildMap(path);
 grid.printMap();
 grid.resetMap();
-console.log(
-  "=============================================================================================================================="
-);
+console.log("================");
 
-console.log(
-  "========================================================PART 2================================================================"
-);
+console.log("=====PART 2=====");
 let a_start = new A_Star(grid);
-
 const allAPoints = grid.getAllSamePoints("a");
 const allPaths = allAPoints
   .filter((point) => point[0] === 0 || point[1] === 0)
@@ -283,5 +276,4 @@ const allPaths = allAPoints
   .sort((a, b) => a - b);
 
 console.log("shortest path", allPaths);
-
 console.log("shortest path", allPaths[0]);
