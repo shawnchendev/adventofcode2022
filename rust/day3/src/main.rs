@@ -3,6 +3,7 @@ use std::collections::HashSet;
 use std::fs::File;
 use std::io::{prelude::*, BufReader};
 use std::path::Path;
+
 fn read_from_files(file_path: impl AsRef<Path>) -> Vec<String> {
     let file = File::open(file_path).expect("file does not exist");
     let reader = BufReader::new(file);
