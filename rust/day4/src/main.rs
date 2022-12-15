@@ -9,14 +9,30 @@ fn read_from_files(file_path: impl AsRef<Path>) -> Vec<String> {
     reader.lines().map(|l| l.unwrap()).collect()
 }
 
-fn parse_line(line: &str) -> HashMap<&str, Vec<String>> {
+fn parse_line(line: &str) -> HashMap<&str, Vec<i32>> {
     let number_pair = line.split(",").collect::<Vec<&str>>();
-    let pair_one = number_pair[0].split("-").map(|x| x.to_string()).collect();
-    let pair_two = number_pair[1].split("-").map(|x| x.to_string()).collect();
+    let pair_one = parse_pair(number_pair[0]);
+    let pair_two: Vec<i32> = parse_pair(number_pair[1]);
     let mut pairs = HashMap::new();
     pairs.insert("first", pair_one);
     pairs.insert("second", pair_two);
     pairs
+}
+
+fn parse_pair(pair: &str) -> Vec<i32> {
+    let parsed_pair: Vec<i32> = pair.split("-").map(|x| x.parse::<i32>().unwrap()).collect();
+    parsed_pair
+}
+
+fn is_fully_contain(first: &Vec<i32>, second: &Vec<i32>) -> bool {
+    first[0] <= second[0] && first[1] >= second[1] || second[0] <= first[0] && second[1] >= first[1]
+}
+
+fn is_partially_contain(first: &Vec<i32>, second: &Vec<i32>) -> bool {
+    first[0] >= second[1] && first[0] <= second[1]
+        || first[1] <= second[1] && first[1] >= second[0]
+        || second[0] >= first[0] && second[0] <= first[1]
+        || second[1] <= first[1] && second[1] >= first[0]
 }
 
 fn main() {
@@ -27,22 +43,11 @@ fn main() {
         let parsed_line = parse_line(&line);
         let first = parsed_line.get("first").unwrap();
         let second = parsed_line.get("second").unwrap();
-        let first_number_one = first[0].parse::<i32>().unwrap();
-        let first_number_two = first[1].parse::<i32>().unwrap();
-        let second_number_one = second[0].parse::<i32>().unwrap();
-        let second_number_two = second[1].parse::<i32>().unwrap();
-
-        if first_number_one <= second_number_one && first_number_two >= second_number_two
-            || second_number_one <= first_number_one && second_number_two >= first_number_two
-        {
+        if is_fully_contain(first, second) {
             fully_contain_result += 1;
         }
 
-        if first_number_one >= second_number_two && first_number_one <= second_number_two
-            || first_number_two <= second_number_two && first_number_two >= second_number_one
-            || second_number_one >= first_number_one && second_number_one <= first_number_two
-            || second_number_two <= first_number_two && second_number_two >= first_number_one
-        {
+        if is_partially_contain(first, second) {
             partially_contain_result += 1;
         }
     }
